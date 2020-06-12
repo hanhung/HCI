@@ -1,0 +1,8 @@
+character
+dataset
+example
+handwriting
+hw1
+*.t7
+*.grid
+.DS_Store
