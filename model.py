@@ -20,7 +20,10 @@ class Net(nn.Module):
         self.fc1 = nn.Linear(512 * 7 * 7, 256)
 
         self.bbox_head = nn.Sequential(nn.Linear(256, 128), nn.ReLU(), nn.Linear(128, 4), nn.Sigmoid())
-        self.classifier = nn.Sequential(nn.Linear(256, 128), nn.ReLU(), nn.Linear(128, 4))
+        self.classifier_head = nn.Sequential(nn.Linear(256, 128), nn.ReLU())
+        self.classifier_1 = nn.Linear(128, 2)
+        self.classifier_2 = nn.Linear(128, 2)
+        self.classifier_3 = nn.Linear(128, 2)
 
     def forward(self, x):
         x = self.pool(self.bn1(F.relu(self.conv1(x))))
@@ -31,5 +34,8 @@ class Net(nn.Module):
         x = x.view(x.shape[0], -1)
         x = F.relu(self.fc1(x))
         bbox = self.bbox_head(x)
-        label = self.classifier(x)
-        return bbox, label
+        latent = self.classifier_head(x)
+        label_1 = self.classifier_1(latent)
+        label_2 = self.classifier_2(latent)
+        label_3 = self.classifier_3(latent)
+        return bbox, label_1, label_2, label_3

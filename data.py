@@ -23,7 +23,7 @@ class HandWritingDataset(object):
         temp = self.bbox[idx]
         bbox = [temp[0], temp[2], temp[1] - temp[0], temp[3] - temp[2]]
         bbox = torch.from_numpy(np.array(bbox)).float()
-        label = torch.from_numpy(np.array([self.label[idx]])).long()
+        label = torch.from_numpy(np.array(self.label[idx])).long()
 
         target = {}
         target["img"] = img

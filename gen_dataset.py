@@ -57,6 +57,40 @@ train_bbox = []
 train_label = []
 train_samples = 50000
 test_samples = 10000
+
+for i in tqdm(range(4)):
+    path = random.choice(source)
+    for j in range(4):
+        img = cv2.imread(path, 1)
+        dim = (90, 90)
+        img = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+
+        rotation_choice = np.random.choice(2, 1)[0]
+        if rotation_choice == 0:
+            rotation_angle = random.choice((-1, 1)) * np.random.randint(low=0, high=11, size=1)[0]
+        else:
+            rotation_angle = random.choice((-1, 1)) * np.random.randint(low=20, high=41, size=1)[0]
+
+        scale_choice = np.random.choice(2, 1)[0]
+        if scale_choice == 0:
+            scale_percentage = np.random.uniform(0.9, 1.0, 1)[0]
+        else:
+            scale_percentage = np.random.uniform(0.5, 0.7, 1)[0]
+
+        shift_choice = np.random.choice(2, 1)[0]
+        shift_x = 0
+        shift_y = 0
+        if shift_choice == 0:
+            shift_x = random.choice((-1, 1)) * np.random.randint(low=0, high=4, size=1)[0]
+            shift_y = random.choice((-1, 1)) * np.random.randint(low=0, high=4, size=1)[0]
+        else:
+            shift_x = random.choice((-1, 1)) * np.random.randint(low=6, high=11, size=1)[0]
+            shift_y = random.choice((-1, 1)) * np.random.randint(low=6, high=11, size=1)[0]
+
+        img, bbox = gen_image(img, rotation_angle, (shift_x, shift_y), scale_percentage)
+        cv2.imwrite('./example/{}.jpg'.format(j * 4 + i), img)
+exit()
+
 for i in tqdm(range(train_samples)):
     path = random.choice(source)
     img = cv2.imread(path, 1)
@@ -176,7 +210,10 @@ for i in tqdm(range(test_samples)):
 train_images = np.array(train_images)
 train_bbox = np.array(train_bbox)
 train_label = np.array(train_label)
-print('Test Shapes')
 np.save('./dataset/test_images.npy', train_images)
 np.save('./dataset/test_bbox.npy', train_bbox)
 np.save('./dataset/test_label.npy', train_label)
+print('Test Shapes')
+print(train_images.shape)
+print(train_bbox.shape)
+print(train_label.shape)
