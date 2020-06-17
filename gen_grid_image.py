@@ -24,5 +24,5 @@ for i in range(4):
     im_h = cv2.hconcat([im1, im2, im3, im4])
     rows.append(im_h)
 im_v = cv2.vconcat(rows)
-cv2.imwrite('./example/send.jpg', im_v)
+cv2.imwrite('./example/send6.jpg', im_v)
 print(im_v.shape)

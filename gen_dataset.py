@@ -66,18 +66,31 @@ for i in tqdm(range(4)):
         img = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
 
         rotation_choice = np.random.choice(2, 1)[0]
+        scale_choice = np.random.choice(2, 1)[0]
+        shift_choice = np.random.choice(2, 1)[0]
+        if i == 0 and j == 0:
+            rotation_choice = 0
+            scale_choice = 0
+            shift_choice = 0
+        elif i == 2 and j == 3:
+            rotation_choice = 0
+            scale_choice = 0
+            shift_choice = 0
+        elif i == 1 and j == 2:
+            rotation_choice = 0
+            scale_choice = 0
+            shift_choice = 0
+
         if rotation_choice == 0:
             rotation_angle = random.choice((-1, 1)) * np.random.randint(low=0, high=11, size=1)[0]
         else:
             rotation_angle = random.choice((-1, 1)) * np.random.randint(low=20, high=41, size=1)[0]
 
-        scale_choice = np.random.choice(2, 1)[0]
         if scale_choice == 0:
             scale_percentage = np.random.uniform(0.9, 1.0, 1)[0]
         else:
             scale_percentage = np.random.uniform(0.5, 0.7, 1)[0]
 
-        shift_choice = np.random.choice(2, 1)[0]
         shift_x = 0
         shift_y = 0
         if shift_choice == 0:

@@ -11,14 +11,12 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
-from torchvision.models.detection import FasterRCNN
-from torchvision.models.detection.rpn import AnchorGenerator
-from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 
 from model import *
 
 import werkzeug, os
-from flask import Flask
+from flask import jsonify
+from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
 
 app = Flask(__name__)
@@ -35,25 +33,14 @@ class HelloWorld(Resource):
 
 
 class PhotoUpload(Resource):
-    decorators=[]
-
+    decorators = []
     def post(self):
-        data = parser.parse_args()
-        if data['file'] == "":
-            return {
-                    'data':'',
-                    'message':'No file found',
-                    'status':'error'
-                    }
-        photo = data['file']
+        data = request.files['file'].read()
+        npimg = np.fromstring(data, np.uint8)
+        img = cv2.imdecode(npimg, cv2.IMREAD_COLOR)
 
-        if photo:
-            filename = 'received.jpg'
-            path = os.path.join(UPLOAD_FOLDER,filename)
-            photo.save(path)
-
-            grid_img = cv2.imread(path, 1)
-            grid_img = grid_img / 255
+        if True:
+            grid_img = img / 255
 
             return_bbox = []
             return_label = []
@@ -100,26 +87,29 @@ class PhotoUpload(Resource):
                 im_h = cv2.hconcat(cols)
                 rows.append(im_h)
             im_v = cv2.vconcat(rows)
-            cv2.imwrite('./example/predicted.jpg', im_v)
+            cv2.imwrite('./example/blah.jpg', im_v)
             return_bbox = np.array(return_bbox)
             return_label = np.array(return_label)
             np.save('./example/return_bbox.npy', return_bbox)
             np.save('./example/return_label.npy', return_label)
-            # print(return_bbox.shape)
-            # print(return_label.shape)
-            # time.sleep(1000)
 
-            return {
+            response = jsonify({
                     'bbox': return_bbox.tolist(),
                     'label': return_label.tolist(),
                     'message': 'photo uploaded',
                     'status': 'success'
-                    }
-        return {
+                    })
+            response.headers.add('Access-Control-Allow-Origin', '*')
+
+            return response
+
+        response = jsonify({
                 'data': '',
                 'message': 'Something when wrong',
                 'status': 'error'
-                }
+                })
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
 
 api.add_resource(HelloWorld, '/')
 api.add_resource(PhotoUpload,'/upload')
